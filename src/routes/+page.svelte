@@ -167,12 +167,12 @@ onMount(() => {
   <!-- Main content -->
   <div id="content-wrapper" class="ml-15 mt-10 relative z-10">
     <button class="font-semibold bg-gray-700/50 text-white rounded-full text-sm px-4 py-3 mb-4 shadow-lg transition relative overflow-hidden">
-      <span class="relative z-10">🚀 Launching now</span>
+      <span id="text_2" class="relative z-10">🚀 Launching now</span>
     </button>
     <div class="mt-10">
-      <p class="text-slate-200 font-semibold text-lg">INTRODUCING</p>
+      <p class ="text-slate-200 font-semibold text-lg">INTRODUCING</p>
       <p class="text-white text-6xl">RAINFOLL</p>
-      <p class="text-slate-300/70 text-md mt-10">
+      <p id="text_2" class="text-slate-300/70 text-md mt-10">
         Cure your loneiness<br>with one click away 💌
       </p>
     </div>
@@ -296,12 +296,11 @@ onMount(() => {
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    touch-action: none; /* Prevents touch scrolling while dragging */
+    touch-action: none;
     -webkit-touch-callout: none; /* Prevents iOS callout when holding */
-    -webkit-tap-highlight-color: transparent; /* Removes tap highlight on mobile */
+    -webkit-tap-highlight-color: transparent;
   }
   
-  /* Add a subtle visual effect when grabbing the card */
   .card-glass:active {
     transform: scale(0.98) !important;
     box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.25);

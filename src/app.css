@@ -7,6 +7,13 @@
 }
 
 @font-face {
+  font-family: 'inter';
+  src: url('/font/InterTight-Regular.ttf') format('type');
+  font-weight: 800;
+}
+
+
+@font-face {
   font-family: 'ggsans';
   src: url('/font/ggsans-Semibold.ttf') format('truetype');
   font-weight: normal;
@@ -61,5 +68,9 @@ body {
 }
 #card {
    font-family: "ggsans"; 
+}
+
+#text_2 {
+  font-family: "inter";
 }
 
