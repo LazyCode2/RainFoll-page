@@ -21,6 +21,11 @@ let conversations = [
   },
   {
     id: 4,
+    user: { name: "NekoHeart", color: "bg-pink-400", message: "Do you think destiny brought us together?" },
+    ai: { message: "If this is a fate route, then I'm glad I rolled a natural 20." }
+  },
+  {
+    id: 5,
     user: { name: "AmaiSora", color: "bg-rose-400", message: "Would you still like me if I was a tsundere?" },
     ai: { message: "Especially then. Your blush is my favorite color." }
   }
@@ -32,8 +37,17 @@ let currentIndex = 0;
 let interval;
 let hoverPaused = false;
 
+// Swipe functionality variables
+let isDragging = false;
+let startX = 0;
+let currentTranslate = 0;
+let prevTranslate = 0;
+let animationID = 0;
+let draggingCard = null;
+let swipeThreshold = 100; // Pixels needed to swipe to next/prev card
+
 const nextSlide = () => {
-  if (!hoverPaused) {
+  if (!hoverPaused && !isDragging) {
     currentIndex = (currentIndex + 1) % conversations.length;
   }
 };
@@ -50,10 +64,89 @@ const resumeOnLeave = () => {
   hoverPaused = false;
 };
 
+// Touch/Mouse event handlers
+const touchStart = (event, index) => {
+  if (index !== currentIndex) return;
+  
+  hoverPaused = true;
+  isDragging = true;
+  draggingCard = index;
+  
+  // Get start position for both mobile and desktop
+  startX = event.type.includes('mouse') 
+    ? event.clientX 
+    : event.touches[0].clientX;
+    
+  // Stop any automatic animation interval
+  clearInterval(interval);
+  
+  // Cancel any existing animation frame
+  cancelAnimationFrame(animationID);
+  
+  // Start animation
+  animation();
+};
+
+const touchMove = (event) => {
+  if (!isDragging) return;
+  
+  // Get current position for both mobile and desktop
+  const currentX = event.type.includes('mouse')
+    ? event.clientX
+    : event.touches[0].clientX;
+  
+  // Calculate how far we've moved
+  currentTranslate = prevTranslate + currentX - startX;
+};
+
+const touchEnd = () => {
+  if (!isDragging) return;
+  isDragging = false;
+  cancelAnimationFrame(animationID);
+  
+  // Determine if we've swiped far enough to change cards
+  const movedBy = currentTranslate - prevTranslate;
+  
+  if (movedBy < -swipeThreshold) {
+    // Swiped left - next card
+    nextSlide();
+  } else if (movedBy > swipeThreshold) {
+    // Swiped right - prev card
+    prevSlide();
+  }
+  
+  // Reset values
+  currentTranslate = 0;
+  prevTranslate = 0;
+  
+  // Restart the auto rotation after a delay
+  setTimeout(() => {
+    hoverPaused = false;
+    interval = setInterval(nextSlide, 4000);
+  }, 1000);
+};
+
+const animation = () => {
+  animationID = requestAnimationFrame(animation);
+};
 
 onMount(() => {
   interval = setInterval(nextSlide, 4000);
-  return () => clearInterval(interval);
+  
+  // Add event listeners for document to handle edge cases
+  document.addEventListener('mouseup', touchEnd);
+  document.addEventListener('touchend', touchEnd);
+  document.addEventListener('mousemove', touchMove);
+  document.addEventListener('touchmove', touchMove);
+  
+  return () => {
+    clearInterval(interval);
+    cancelAnimationFrame(animationID);
+    document.removeEventListener('mouseup', touchEnd);
+    document.removeEventListener('touchend', touchEnd);
+    document.removeEventListener('mousemove', touchMove);
+    document.removeEventListener('touchmove', touchMove);
+  };
 });
 </script>
   <div class="bg-image"></div>
@@ -77,19 +170,26 @@ onMount(() => {
         <div id="stars3"></div>
   </div>
   <div id="card" class="relative z-10 mt-3 mb-32 h-96 flex items-center justify-center">
-    <div class="relative w-full h-80 flex items-center justify-center overflow-hidden" 
+    <div class="relative w-full h-80 flex items-center justify-center overflow-hidden touch-pan-y" 
          on:mouseenter={pauseOnHover}
          on:mouseleave={resumeOnLeave}>
       <div class="relative w-72 h-72">
+        <!-- Added instructions for users -->
+        <div class="absolute -top-8 left-0 right-0 text-center text-gray-400 text-sm">
+          <span class="animate-pulse">← Swipe cards →</span>
+        </div>
+        
         {#each conversations as conv, index (conv.id)}
           <div
-            class="absolute w-66 h-52 bg-gray-800/80 rounded-lg border border-gray-700/50 transition-all duration-500 ease-in-out overflow-hidden card-glass"
+            class="absolute w-66 h-52 bg-gray-800/80 rounded-lg border border-gray-700/50 transition-all duration-500 ease-in-out overflow-hidden card-glass cursor-grab active:cursor-grabbing"
             style={`
-              transform: translateX(${(index - currentIndex) * 280}px);
+              transform: translateX(${(index - currentIndex) * 280 + (index === draggingCard ? currentTranslate : 0)}px);
               opacity: ${index === currentIndex ? 1 : 0.6};
               z-index: ${conversations.length - Math.abs(index - currentIndex)};
               ${Math.abs(index - currentIndex) > 1 ? 'visibility: hidden;' : ''}
             `}
+            on:mousedown={(e) => touchStart(e, index)}
+            on:touchstart={(e) => touchStart(e, index)}
           >
             <div class="p-3 hover:bg-gray-750/50 transition-colors">
               <div class="flex">
@@ -181,6 +281,13 @@ onMount(() => {
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.3s ease-out;
+  }
+  
+  /* Add a subtle visual effect when grabbing the card */
+  .card-glass:active {
+    transform: scale(0.98);
+    box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.25);
   }
 
   @keyframes float-up {
@@ -347,5 +454,24 @@ onMount(() => {
   
   .testimonial-fade {
     animation: fade 5s ease-in-out infinite;
+  }
+  
+  /* Swipe indicator animation */
+  @keyframes swipe-hint {
+    0% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    100% { transform: translateX(-5px); }
+  }
+  
+  .swipe-hint {
+    animation: swipe-hint 2s ease-in-out infinite;
+  }
+  
+  /* Disable user selection during drag */
+  .card-glass {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
 </style>
