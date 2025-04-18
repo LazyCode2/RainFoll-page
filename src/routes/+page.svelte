@@ -50,24 +50,9 @@ const resumeOnLeave = () => {
   hoverPaused = false;
 };
 
-const addFloatingHeart = () => {
-  const id = Date.now();
-  const xPos = Math.random() * 100;
-  floatingHearts = [...floatingHearts, { id, xPos }];
-  
-  setTimeout(() => {
-    floatingHearts = floatingHearts.filter(heart => heart.id !== id);
-  }, 5000);
-};
-
-const cycleTestimonials = () => {
-  currentTestimonial = (currentTestimonial + 1) % testimonials.length;
-};
 
 onMount(() => {
   interval = setInterval(nextSlide, 4000);
-  setInterval(addFloatingHeart, 3000);
-  setInterval(cycleTestimonials, 5000);
   return () => clearInterval(interval);
 });
 </script>
