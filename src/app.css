@@ -43,11 +43,11 @@ body {
   position: fixed;
   top: 0;
   left: -45px; 
-  width: calc(100% + 45px); /* Extends width to compensate for negative left */
+  width: calc(100% + 45px); 
   height: 100%;
   background-image: url('/img/bg.png');
   background-repeat: no-repeat;
-  background-size: cover; /* or 'auto' if u don't want scaling */
+  background-size: cover;
   z-index: -1; 
 }
 
