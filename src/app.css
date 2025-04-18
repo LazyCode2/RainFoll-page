@@ -12,6 +12,16 @@
   font-weight: normal;
 }
 
+@font-face {
+  font-family: 'ggsans_n';
+  src: url('/font/ggsans-Normal.ttf') format('truetype');
+  font-weight: normal;
+}
+
+#msg-ai {
+  font-family: ggsans_n;
+}
+
 body {
   font-family: "VisbyCF";
   margin: 0;

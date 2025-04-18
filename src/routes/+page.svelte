@@ -129,7 +129,7 @@ onMount(() => {
                     <span class="text-white mr-2">{conv.user.name}</span>
                     <span class="text-gray-400 text-xs">{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                   </div>
-                  <p class="text-gray-100 mt-1">{conv.user.message}</p>
+                  <p id="msg-ai"  class="text-gray-100 mt-1">{conv.user.message}</p>
                 </div>
               </div>
             </div>
@@ -147,7 +147,7 @@ onMount(() => {
 
                     <span class="text-gray-400 text-xs">{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                   </div>
-                  <p class="text-gray-100 mt-1 typing-effect">{conv.ai.message}</p>
+                  <p id="msg-ai" class="text-gray-100 mt-1 typing-effect">{conv.ai.message}</p>
                 </div>
               </div>
             </div>
