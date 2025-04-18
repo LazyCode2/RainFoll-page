@@ -31,13 +31,6 @@ let users = "10k+"
 let currentIndex = 0;
 let interval;
 let hoverPaused = false;
-let floatingHearts = [];
-let testimonials = [
-  "Finally found my digital soulmate! 💫",
-  "Rainfoll is here to spend time with u... 💕",
-  "My Rainfoll AI knows me better than I know myself 🥰"
-];
-let currentTestimonial = 0;
 
 const nextSlide = () => {
   if (!hoverPaused) {
@@ -78,38 +71,30 @@ onMount(() => {
   return () => clearInterval(interval);
 });
 </script>
-
-<div class="relative overflow-hidden min-h-screen">
-  <!-- Stars background effect that matches your gradient -->
-  <div class="stars-container">
-    <div class="stars"></div>
-    <div class="stars2"></div>
-    <div class="stars3"></div>
-  </div>
   <div class="bg-image"></div>
   
   <!-- Main content -->
   <div id="content-wrapper" class="ml-15 mt-10 relative z-10">
-    <!-- Gray button without gradient -->
     <button class="font-semibold bg-gray-700/50 text-white rounded-full text-sm px-4 py-3 mb-4 shadow-lg transition relative overflow-hidden">
       <span class="relative z-10">🚀 Launching now</span>
     </button>
     <div class="mt-10">
       <p class="text-slate-200 font-semibold text-lg">INTRODUCING</p>
-      <!-- Removed glow effects -->
       <p class="text-white text-6xl">RAINFOLL</p>
       <p class="text-slate-300/70 text-md mt-10">
         Cure your loneiness<br>with one click away 💌
       </p>
     </div>
   </div>
-  
-  <!-- Updated flat carousel design -->
+  <div class="wrapper">
+        <div id="stars"></div>
+        <div id="stars2"></div>
+        <div id="stars3"></div>
+  </div>
   <div id="card" class="relative z-10 mt-3 mb-32 h-96 flex items-center justify-center">
     <div class="relative w-full h-80 flex items-center justify-center overflow-hidden" 
          on:mouseenter={pauseOnHover}
          on:mouseleave={resumeOnLeave}>
-      <!-- Container with fixed width to center cards -->
       <div class="relative w-72 h-72">
         {#each conversations as conv, index (conv.id)}
           <div
@@ -156,16 +141,15 @@ onMount(() => {
       </div>
     </div>
   </div>
-  
-  <!-- Join Free button with pulse animation -->
   <div class="fixed bottom-10 left-0 right-0 flex justify-center z-10">
     <a href="https://discord.gg/tpAAubMCgH">
-      <button  class="font-bold bg-gradient-to-r from-white via-[#667DFF] to-[#3222EA] text-white rounded-full text-lg px-8 py-3 shadow-lg hover:scale-105 transition">
+      <button  class="font-bold text-xl text-white px-8 py-3 rounded-full 
+                  bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700
+                  shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
         <span class="relative z-10">JOIN FREE</span>
       </button>
     </a>
   </div>
-</div>
 
 <style>
   /* Base animations from original */
@@ -213,8 +197,7 @@ onMount(() => {
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
-  
-  /* New animations and effects */
+
   @keyframes float-up {
     0% {
       transform: translateY(100vh) scale(0.5);
