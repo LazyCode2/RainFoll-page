@@ -44,7 +44,7 @@ let currentTranslate = 0;
 let prevTranslate = 0;
 let animationID = 0;
 let draggingCard = null;
-let swipeThreshold = 100; // Pixels needed to swipe to next/prev card
+let swipeThreshold = 80; 
 
 const nextSlide = () => {
   if (!hoverPaused && !isDragging) {
@@ -67,6 +67,9 @@ const resumeOnLeave = () => {
 // Touch/Mouse event handlers
 const touchStart = (event, index) => {
   if (index !== currentIndex) return;
+  if (event.type.includes('mouse')) {
+    event.preventDefault();
+  }
   
   hoverPaused = true;
   isDragging = true;
@@ -79,73 +82,83 @@ const touchStart = (event, index) => {
     
   // Stop any automatic animation interval
   clearInterval(interval);
-  
-  // Cancel any existing animation frame
   cancelAnimationFrame(animationID);
-  
-  // Start animation
-  animation();
 };
 
 const touchMove = (event) => {
   if (!isDragging) return;
   
-  // Get current position for both mobile and desktop
+  // Prevent default to stop scrolling while dragging
+  event.preventDefault();  
   const currentX = event.type.includes('mouse')
     ? event.clientX
     : event.touches[0].clientX;
-  
-  // Calculate how far we've moved
-  currentTranslate = prevTranslate + currentX - startX;
+
+  const currentDistance = currentX - startX;
+
+  const maxDrag = 150;
+  currentTranslate = Math.max(Math.min(currentDistance, maxDrag), -maxDrag);
 };
 
-const touchEnd = () => {
+const touchEnd = (event) => {
   if (!isDragging) return;
+  
+  if (event && event.preventDefault) {
+    event.preventDefault();
+  }
+  
   isDragging = false;
   cancelAnimationFrame(animationID);
-  
-  // Determine if we've swiped far enough to change cards
-  const movedBy = currentTranslate - prevTranslate;
-  
-  if (movedBy < -swipeThreshold) {
+  if (currentTranslate < -swipeThreshold) {
     // Swiped left - next card
     nextSlide();
-  } else if (movedBy > swipeThreshold) {
+  } else if (currentTranslate > swipeThreshold) {
     // Swiped right - prev card
     prevSlide();
   }
-  
-  // Reset values
+
   currentTranslate = 0;
   prevTranslate = 0;
-  
-  // Restart the auto rotation after a delay
+  draggingCard = null;
   setTimeout(() => {
     hoverPaused = false;
-    interval = setInterval(nextSlide, 4000);
+    interval = setInterval(nextSlide, 5000); //  auto-rotation (5s )
   }, 1000);
 };
 
 const animation = () => {
-  animationID = requestAnimationFrame(animation);
+  if (isDragging) {
+    animationID = requestAnimationFrame(animation);
+  }
+};
+
+const preventDrag = (e) => {
+  e.preventDefault();
 };
 
 onMount(() => {
-  interval = setInterval(nextSlide, 4000);
-  
-  // Add event listeners for document to handle edge cases
-  document.addEventListener('mouseup', touchEnd);
-  document.addEventListener('touchend', touchEnd);
-  document.addEventListener('mousemove', touchMove);
-  document.addEventListener('touchmove', touchMove);
+  interval = setInterval(nextSlide, 6000); //  auto-rotation
+
+  document.addEventListener('mouseup', touchEnd, { passive: false });
+  document.addEventListener('touchend', touchEnd, { passive: false });
+  const cardContainer = document.getElementById('card-container');
+  if (cardContainer) {
+    cardContainer.addEventListener('mousemove', touchMove, { passive: false });
+    cardContainer.addEventListener('touchmove', touchMove, { passive: false });
+    cardContainer.addEventListener('dragstart', preventDrag, { passive: false });
+  }
   
   return () => {
     clearInterval(interval);
     cancelAnimationFrame(animationID);
     document.removeEventListener('mouseup', touchEnd);
     document.removeEventListener('touchend', touchEnd);
-    document.removeEventListener('mousemove', touchMove);
-    document.removeEventListener('touchmove', touchMove);
+    
+    if (cardContainer) {
+      cardContainer.removeEventListener('mousemove', touchMove);
+      cardContainer.removeEventListener('touchmove', touchMove);
+      cardContainer.removeEventListener('dragstart', preventDrag);
+    }
   };
 });
 </script>
@@ -170,7 +183,7 @@ onMount(() => {
         <div id="stars3"></div>
   </div>
   <div id="card" class="relative z-10 mt-3 mb-32 h-96 flex items-center justify-center">
-    <div class="relative w-full h-80 flex items-center justify-center overflow-hidden touch-pan-y" 
+    <div id="card-container" class="relative w-full h-80 flex items-center justify-center overflow-hidden" 
          on:mouseenter={pauseOnHover}
          on:mouseleave={resumeOnLeave}>
       <div class="relative w-72 h-72">
@@ -181,7 +194,7 @@ onMount(() => {
         
         {#each conversations as conv, index (conv.id)}
           <div
-            class="absolute w-66 h-52 bg-gray-800/80 rounded-lg border border-gray-700/50 transition-all duration-500 ease-in-out overflow-hidden card-glass cursor-grab active:cursor-grabbing"
+            class="absolute w-66 h-52 bg-gray-800/80 rounded-lg border border-gray-700/50 transition-all duration-700 ease-in-out overflow-hidden card-glass cursor-grab active:cursor-grabbing"
             style={`
               transform: translateX(${(index - currentIndex) * 280 + (index === draggingCard ? currentTranslate : 0)}px);
               opacity: ${index === currentIndex ? 1 : 0.6};
@@ -190,6 +203,7 @@ onMount(() => {
             `}
             on:mousedown={(e) => touchStart(e, index)}
             on:touchstart={(e) => touchStart(e, index)}
+            draggable="false"
           >
             <div class="p-3 hover:bg-gray-750/50 transition-colors">
               <div class="flex">
@@ -199,7 +213,7 @@ onMount(() => {
                     <span class="text-white mr-2">{conv.user.name}</span>
                     <span class="text-gray-400 text-xs">{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                   </div>
-                  <p id="msg-ai"  class="text-gray-100 mt-1">{conv.user.message}</p>
+                  <p id="msg-ai" class="text-gray-100 mt-1 select-none">{conv.user.message}</p>
                 </div>
               </div>
             </div>
@@ -217,13 +231,14 @@ onMount(() => {
 
                     <span class="text-gray-400 text-xs">{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                   </div>
-                  <p id="msg-ai" class="text-gray-100 mt-1 typing-effect">{conv.ai.message}</p>
+                  <p id="msg-ai" class="text-gray-100 mt-1 typing-effect select-none">{conv.ai.message}</p>
                 </div>
               </div>
             </div>
           </div>
         {/each}
       </div>
+      
     </div>
   </div>
   <div class="fixed bottom-10 left-0 right-0 flex justify-center z-10">
@@ -281,12 +296,14 @@ onMount(() => {
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: transform 0.3s ease-out;
+    touch-action: none; /* Prevents touch scrolling while dragging */
+    -webkit-touch-callout: none; /* Prevents iOS callout when holding */
+    -webkit-tap-highlight-color: transparent; /* Removes tap highlight on mobile */
   }
   
   /* Add a subtle visual effect when grabbing the card */
   .card-glass:active {
-    transform: scale(0.98);
+    transform: scale(0.98) !important;
     box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.25);
   }
 
@@ -455,23 +472,11 @@ onMount(() => {
   .testimonial-fade {
     animation: fade 5s ease-in-out infinite;
   }
-  
-  /* Swipe indicator animation */
-  @keyframes swipe-hint {
-    0% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    100% { transform: translateX(-5px); }
-  }
-  
-  .swipe-hint {
-    animation: swipe-hint 2s ease-in-out infinite;
-  }
-  
-  /* Disable user selection during drag */
-  .card-glass {
+  .select-none {
     user-select: none;
     -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
+  }
+  #card-container {
+    touch-action: none;
   }
 </style>
