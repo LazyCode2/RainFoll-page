@@ -87,19 +87,6 @@ onMount(() => {
     <div class="stars3"></div>
   </div>
   <div class="bg-image"></div>
-  <!-- Floating hearts -->
-  {#each floatingHearts as heart}
-    <div class="absolute z-10 animate-float-up" style="left: {heart.xPos}%;">
-      <span class="text-2xl">💖</span>
-    </div>
-  {/each}
-  
-  <!-- Floating sparkles -->
-  <div class="sparkle sparkle-1"></div>
-  <div class="sparkle sparkle-2"></div>
-  <div class="sparkle sparkle-3"></div>
-  <div class="sparkle sparkle-4"></div>
-  <div class="sparkle sparkle-5"></div>
   
   <!-- Main content -->
   <div id="content-wrapper" class="ml-15 mt-10 relative z-10">
@@ -108,9 +95,9 @@ onMount(() => {
       <span class="relative z-10">🚀 Launching now</span>
     </button>
     <div class="mt-10">
-      <p class="text-slate-200 font-semibold text-lg">Introducing</p>
+      <p class="text-slate-200 font-semibold text-lg">INTRODUCING</p>
       <!-- Removed glow effects -->
-      <p class="text-white text-6xl tracking-tight">RAINFOLL</p>
+      <p class="text-white text-6xl">RAINFOLL</p>
       <p class="text-slate-300/70 text-md mt-10">
         Cure your loneiness<br>with one click away 💌
       </p>
@@ -139,7 +126,7 @@ onMount(() => {
                 <div class={`w-8 h-8 rounded-full ${conv.user.color} mr-2 flex-shrink-0 pulse-avatar`}></div>
                 <div>
                   <div class="flex items-baseline">
-                    <span class="text-white font-medium mr-2">{conv.user.name}</span>
+                    <span class="text-white mr-2">{conv.user.name}</span>
                     <span class="text-gray-400 text-xs">{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                   </div>
                   <p class="text-gray-100 mt-1">{conv.user.message}</p>
@@ -156,7 +143,7 @@ onMount(() => {
                 <div>
                   <div class="flex items-baseline">
                     <span class="text-indigo-400 font-medium mr-2">Rainfoll AI</span>
-                   <span class="text-xs font-semibold uppercase bg-[#5865F2] text-white px-1.5 py-0.5 rounded-md shadow-sm mr-1">APP</span>
+                   <span class="text-xs uppercase bg-[#5865F2] text-white px-1.5 py-0.5 rounded-md shadow-sm mr-1">APP</span>
 
                     <span class="text-gray-400 text-xs">{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                   </div>
@@ -173,10 +160,8 @@ onMount(() => {
   <!-- Join Free button with pulse animation -->
   <div class="fixed bottom-10 left-0 right-0 flex justify-center z-10">
     <a href="https://discord.gg/tpAAubMCgH">
-      <button  class="font-bold bg-gradient-to-r from-white via-[#667DFF] to-[#3222EA] text-white rounded-full text-lg px-8 py-3 shadow-lg hover:scale-105 transition hover:shadow-[#667DFF]/50 relative overflow-hidden group">
+      <button  class="font-bold bg-gradient-to-r from-white via-[#667DFF] to-[#3222EA] text-white rounded-full text-lg px-8 py-3 shadow-lg hover:scale-105 transition">
         <span class="relative z-10">JOIN FREE</span>
-        <span class="absolute -top-10 -right-10 w-16 h-16 bg-white/30 rotate-45 transform transition-all duration-500 group-hover:translate-x-20 group-hover:translate-y-20"></span>
-        <span class="absolute -bottom-10 -left-10 w-16 h-16 bg-white/30 rotate-45 transform transition-all duration-500 group-hover:-translate-x-20 group-hover:-translate-y-20"></span>
       </button>
     </a>
   </div>
@@ -219,70 +204,6 @@ onMount(() => {
 
   .animate-pulse {
     animation: pulse 2s ease-in-out infinite;
-  }
-
-  /* Star animation that works with your gradient */
-  .stars-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .stars, .stars2, .stars3 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-    background-image: 
-      radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0)),
-      radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.7), rgba(0, 0, 0, 0)),
-      radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.6), rgba(0, 0, 0, 0)),
-      radial-gradient(2px 2px at 160px 120px, rgba(255, 255, 255, 0.7), rgba(0, 0, 0, 0)),
-      radial-gradient(1px 1px at 230px 50px, rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0));
-    background-repeat: repeat;
-    background-size: 250px 250px;
-    opacity: 0;
-    animation: stars-animation 15s linear infinite;
-  }
-
-  .stars {
-    background-position: 0 0;
-    animation-delay: 0s;
-  }
-
-  .stars2 {
-    background-position: 100px 50px;
-    animation-delay: 5s;
-  }
-
-  .stars3 {
-    background-position: 50px 100px;
-    animation-delay: 10s;
-  }
-
-  @keyframes stars-animation {
-    0% {
-      opacity: 0;
-      transform: translateY(0px) translateX(0px);
-    }
-    10% {
-      opacity: 0.5;
-    }
-    70% {
-      opacity: 0.3;
-    }
-    100% {
-      opacity: 0;
-      transform: translateY(1000px) translateX(-100px);
-    }
   }
 
   /* Glassmorphism effect for cards */

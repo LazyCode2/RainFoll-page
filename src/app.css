@@ -2,9 +2,8 @@
 @plugin '@tailwindcss/typography';
 @font-face {
   font-family: 'VisbyCF';
-  src: url('/font/VisbyCF-Heavy.ttf') format('truetype');
+  src: url('/font/VisbyCF-Heavy.otf') format('opentype');
   font-weight: 800;
-  font-style: normal;
 }
 
 @font-face {
