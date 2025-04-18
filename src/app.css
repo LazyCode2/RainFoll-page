@@ -1,0 +1,55 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+@font-face {
+  font-family: 'VisbyCF';
+  src: url('/font/VisbyCF-Heavy.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ggsans';
+  src: url('/font/ggsans-Semibold.ttf') format('truetype');
+  font-weight: normal;
+}
+
+body {
+  font-family: "VisbyCF";
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden; 
+}
+
+.relative.overflow-hidden.min-h-screen {
+  position: relative;
+}
+.bg-image {
+  position: fixed;
+  top: 0;
+  left: -45px; 
+  width: calc(100% + 45px); /* Extends width to compensate for negative left */
+  height: 100%;
+  background-image: url('/img/bg.png');
+  background-repeat: no-repeat;
+  background-size: cover; /* or 'auto' if u don't want scaling */
+  z-index: -1; 
+}
+
+@media (min-width: 768px) {
+  body {
+    background-size: 90% auto; 
+  }
+}
+@media (min-width: 1024px) {
+  body {
+    background-size: 80% auto; 
+  }
+}
+@media (min-width: 1600px) {
+  body {
+    background-size: 70% auto; 
+  }
+}
+#card {
+   font-family: "ggsans"; 
+}
